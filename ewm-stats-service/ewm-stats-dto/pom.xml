@@ -14,7 +14,6 @@
     <packaging>jar</packaging>
 
     <dependencies>
-        <!-- Основные зависимости (оставляем) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -33,7 +32,6 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
-        <!-- Spring Boot Test зависимости -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
