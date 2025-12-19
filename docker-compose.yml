@@ -39,7 +39,7 @@ services:
     networks:
       - ewm-network
 
-  # Заглушка основного сервиса
+#Заглушка основого сервиса
   ewm-db:
     image: postgres:16.1
     container_name: ewm-db
@@ -51,6 +51,14 @@ services:
       - "6543:5432"
     volumes:
       - ewm_data:/var/lib/postgresql/data
+    networks:
+      - ewm-network
+
+  # Заглушка ewm-service
+  ewm-service:
+    image: busybox
+    container_name: ewm-service
+    command: tail -f /dev/null
     networks:
       - ewm-network
 
