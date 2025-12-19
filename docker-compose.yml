@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   stats-db:
     image: postgres:16.1
@@ -22,12 +24,11 @@ services:
     build:
       context: .
       dockerfile: ewm-stats-service/ewm-stats-server/Dockerfile
-      args:
-        JAR_FILE: ewm-stats-service/ewm-stats-server/target/ewm-stats-server-0.0.1-SNAPSHOT.jar
     container_name: stats-server
     ports:
-      - "8080:8080"
+      - "9090:9090"
     environment:
+      SERVER_PORT: 9090
       SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: pass
