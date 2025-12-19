@@ -1,6 +1,7 @@
 package ru.practicum.stats.client;
 
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.stats.dto.HitDto;
 import ru.practicum.stats.dto.ViewStatsDto;
 
@@ -10,7 +11,8 @@ import java.util.*;
 
 public class StatsClient {
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final RestTemplate restTemplate;
     private final String serverUrl;
@@ -24,15 +26,19 @@ public class StatsClient {
         restTemplate.postForEntity(serverUrl + "/hit", hitDto, Void.class);
     }
 
-    public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("start", start.format(DATE_TIME_FORMATTER));
-        params.put("end", end.format(DATE_TIME_FORMATTER));
-        params.put("uris", uris);
-        params.put("unique", unique);
+    public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
+                                       List<String> uris, boolean unique) {
+        String urisParam = (uris == null || uris.isEmpty()) ? "" : String.join(",", uris);
 
-        ViewStatsDto[] response = restTemplate.getForObject(serverUrl + "/stats?start={start}&end={end}&uris={uris}&unique={unique}", ViewStatsDto[].class, params);
+        String url = UriComponentsBuilder.fromHttpUrl(serverUrl + "/stats")
+                .queryParam("start", start.format(DATE_TIME_FORMATTER))
+                .queryParam("end", end.format(DATE_TIME_FORMATTER))
+                .queryParam("uris", urisParam)
+                .queryParam("unique", unique)
+                .toUriString();
 
-        return response == null ? List.of() : Arrays.asList(response);
+        ViewStatsDto[] response = restTemplate.getForObject(url, ViewStatsDto[].class);
+
+        return response == null ? Collections.emptyList() : Arrays.asList(response);
     }
 }
