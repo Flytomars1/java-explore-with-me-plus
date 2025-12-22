@@ -1,0 +1,22 @@
+server:
+  port: 9090
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:6542/stats}
+    username: ${SPRING_DATASOURCE_USERNAME:stats}
+    password: ${SPRING_DATASOURCE_PASSWORD:stats}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  sql:
+    init:
+      mode: always
+      platform: postgresql
+      schema-locations: classpath:schema.sql
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
