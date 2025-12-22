@@ -9,6 +9,11 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: false
+  sql:
+    init:
+      mode: always
+      platform: postgresql
+      schema-locations: classpath:schema.sql
 
 management:
   endpoints:
