@@ -40,7 +40,6 @@ services:
     networks:
       - ewm-network
 
-#Заглушка основого сервиса
   ewm-db:
     image: postgres:16.1
     container_name: ewm-db
@@ -55,11 +54,11 @@ services:
     networks:
       - ewm-network
 
-  ewm-main-server:
+  ewm-service:
     build:
       context: .
       dockerfile: ewm-main-service/Dockerfile
-    container_name: ewm-main-server
+    container_name: ewm-service
     ports:
       - "8080:8080"
     environment:
