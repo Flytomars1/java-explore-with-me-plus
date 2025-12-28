@@ -22,6 +22,15 @@ public class Event {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @Enumerated(EnumType.STRING)
+    private EventState state;
+
+    @Column(name = "participant_limit")
+    private Integer participantLimit;
+
+    @Column(name = "request_moderation")
+    private Boolean requestModeration;
+
     private String title;
     private String annotation;
 }
