@@ -2,28 +2,43 @@ package ru.practicum.main.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "events")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "initiator_id")
-    private User initiator;
+    @Column(nullable = false, length = 2000)
+    private String annotation;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @Column(nullable = false, length = 7000)
+    private String description;
 
-    @Enumerated(EnumType.STRING)
-    private EventState state;
+    @Column(nullable = false, length = 120)
+    private String title;
+
+    @Column(name = "category_id", nullable = false)
+    private Long categoryId;
+
+    @Column(name = "event_date", nullable = false)
+    private LocalDateTime eventDate;
+
+    @Column(name = "location_lat")
+    private Float locationLat;
+
+    @Column(name = "location_lon")
+    private Float locationLon;
+
+    @Column(nullable = false)
+    private Boolean paid;
 
     @Column(name = "participant_limit")
     private Integer participantLimit;
@@ -31,6 +46,16 @@ public class Event {
     @Column(name = "request_moderation")
     private Boolean requestModeration;
 
-    private String title;
-    private String annotation;
+    @Column(name = "initiator_id", nullable = false)
+    private Long initiatorId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EventState state;
+
+    @Column(name = "created_on")
+    private LocalDateTime createdOn;
+
+    @Column(name = "published_on")
+    private LocalDateTime publishedOn;
 }
