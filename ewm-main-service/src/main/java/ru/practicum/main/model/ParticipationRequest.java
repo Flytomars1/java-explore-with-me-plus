@@ -6,19 +6,20 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-        name = "requests",
-        uniqueConstraints = @UniqueConstraint(name = "uq_request", columnNames = {"requester_id", "event_id"})
-)
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "requests")
+@Getter
+@Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ParticipationRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "created", nullable = false)
+    private LocalDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
@@ -31,7 +32,4 @@ public class ParticipationRequest {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RequestStatus status;
-
-    @Column(nullable = false)
-    private LocalDateTime created;
 }

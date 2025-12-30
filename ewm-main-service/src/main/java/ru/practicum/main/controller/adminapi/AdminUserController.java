@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.dto.user.NewUserRequest;
-import ru.practicum.main.dto.user.UpdateUserRequest;
 import ru.practicum.main.dto.user.UserDto;
 import ru.practicum.main.service.user.UserService;
 
@@ -27,15 +26,6 @@ public class AdminUserController {
     public UserDto createUser(@Valid @RequestBody NewUserRequest newUserRequest) {
         log.info("Admin: creating user with email: {}", newUserRequest.getEmail());
         return userService.createUser(newUserRequest);
-    }
-
-    @PatchMapping("/{userId}")
-    public UserDto updateUser(
-            @PathVariable Long userId,
-            @Valid @RequestBody UpdateUserRequest updateUserRequest) {
-
-        log.info("Admin: updating user with id: {}", userId);
-        return userService.updateUser(userId, updateUserRequest);
     }
 
     @GetMapping

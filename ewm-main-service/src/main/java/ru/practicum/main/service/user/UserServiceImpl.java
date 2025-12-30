@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.dto.user.NewUserRequest;
-import ru.practicum.main.dto.user.UpdateUserRequest;
 import ru.practicum.main.dto.user.UserDto;
 import ru.practicum.main.exception.AlreadyExistsException;
 import ru.practicum.main.exception.NotFoundException;
@@ -32,39 +31,13 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(NewUserRequest newUserRequest) {
         log.info("Creating user with email: {}", newUserRequest.getEmail());
 
-        checkEmailUniqueness(null, newUserRequest.getEmail());
+        checkEmailUniqueness(newUserRequest.getEmail());
 
         User user = UserMapper.toEntity(newUserRequest);
         User savedUser = userRepository.save(user);
 
         log.info("User created with id: {}", savedUser.getId());
         return UserMapper.toDto(savedUser);
-    }
-
-    @Override
-    @Transactional
-    public UserDto updateUser(Long userId, UpdateUserRequest updateUserRequest) {
-        log.info("Updating user with id: {}", userId);
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User with id=" + userId + " was not found"));
-
-        if (updateUserRequest.getName() != null && !updateUserRequest.getName().isBlank()) {
-            user.setName(updateUserRequest.getName());
-        }
-
-        if (updateUserRequest.getEmail() != null &&
-                !updateUserRequest.getEmail().isBlank() &&
-                !updateUserRequest.getEmail().equals(user.getEmail())) {
-
-            checkEmailUniqueness(userId, updateUserRequest.getEmail());
-            user.setEmail(updateUserRequest.getEmail());
-        }
-
-        User updatedUser = userRepository.save(user);
-        log.info("User with id: {} updated", userId);
-
-        return UserMapper.toDto(updatedUser);
     }
 
     @Override
@@ -100,13 +73,9 @@ public class UserServiceImpl implements UserService {
         log.info("User with id: {} deleted", userId);
     }
 
-    private void checkEmailUniqueness(Long userId, String email) {
-        Optional<User> existingUser = userRepository.findByEmail(email);
-
-        if (existingUser.isPresent()) {
-            if (userId == null || !existingUser.get().getId().equals(userId)) {
-                throw new AlreadyExistsException("Email '" + email + "' already exists");
-            }
+    private void checkEmailUniqueness(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new AlreadyExistsException("Email '" + email + "' already exists");
         }
     }
 
