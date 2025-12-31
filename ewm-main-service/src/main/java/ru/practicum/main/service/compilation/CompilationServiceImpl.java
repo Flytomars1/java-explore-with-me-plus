@@ -82,7 +82,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public List<CompilationDto> getAll(Boolean pinned, int from, int size) {
+    public List<CompilationDto> getAll(Boolean pinned, Integer from, Integer size) {
         PageRequest page = PageRequest.of(from / size, size);
         Page<Compilation> compilations;
 
@@ -98,22 +98,41 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     private CompilationDto toDtoWithEvents(Compilation c) {
-        List<EventShortDto> shorts = new ArrayList<>();
-        if (c.getEvents() != null) {
-            shorts = c.getEvents().stream()
-                    .map(e -> {
-                        EventShortDto dto = EventMapper.toShort(e, null, null, 0L, 0L);
-
-                        Category cat = categoryRepository.findById(e.getCategoryId()).orElse(null);
-                        if (cat != null) dto.setCategory(new CategoryDto(cat.getId(), cat.getName()));
-
-                        User user = userRepository.findById(e.getInitiatorId()).orElse(null);
-                        if (user != null) dto.setInitiator(new UserShortDto(user.getId(), user.getName()));
-
-                        return dto;
-                    })
-                    .collect(Collectors.toList());
+        if (c.getEvents() == null || c.getEvents().isEmpty()) {
+            return CompilationMapper.toDto(c, Collections.emptyList());
         }
-        return CompilationMapper.toDto(c, shorts);
+
+        Set<Long> categoryIds = new HashSet<>();
+        Set<Long> userIds = new HashSet<>();
+
+        for (Event event : c.getEvents()) {
+            categoryIds.add(event.getCategoryId());
+            userIds.add(event.getInitiatorId());
+        }
+
+        List<Category> allCategories = categoryRepository.findAllById(categoryIds);
+        List<User> allUsers = userRepository.findAllById(userIds);
+
+        Map<Long, Category> categoriesMap = allCategories.stream()
+                .collect(Collectors.toMap(Category::getId, category -> category));
+
+        Map<Long, User> usersMap = allUsers.stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
+
+        List<EventShortDto> eventDtos = c.getEvents().stream()
+                .map(event -> {
+                    Category cat = categoriesMap.get(event.getCategoryId());
+                    User user = usersMap.get(event.getInitiatorId());
+
+                    CategoryDto catDto = cat != null ?
+                            new CategoryDto(cat.getId(), cat.getName()) : null;
+                    UserShortDto userDto = user != null ?
+                            new UserShortDto(user.getId(), user.getName()) : null;
+
+                    return EventMapper.toShort(event, catDto, userDto, 0L, 0L);
+                })
+                .collect(Collectors.toList());
+
+        return CompilationMapper.toDto(c, eventDtos);
     }
 }

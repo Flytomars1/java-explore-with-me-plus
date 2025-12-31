@@ -3,6 +3,7 @@ package ru.practicum.main.controller.privateapi;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.dto.event.*;
 import ru.practicum.main.service.event.EventService;
@@ -12,6 +13,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users/{userId}/events")
+@Validated
 public class PrivateEventsController {
 
     private final EventService service;
