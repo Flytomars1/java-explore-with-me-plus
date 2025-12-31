@@ -1,4 +1,4 @@
-package ru.practicum.main.controller.eventapi;
+package ru.practicum.main.controller.privateapi;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

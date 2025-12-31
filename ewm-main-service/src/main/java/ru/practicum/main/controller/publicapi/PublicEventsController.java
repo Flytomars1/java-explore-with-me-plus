@@ -1,4 +1,4 @@
-package ru.practicum.main.controller.eventapi;
+package ru.practicum.main.controller.publicapi;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Min;

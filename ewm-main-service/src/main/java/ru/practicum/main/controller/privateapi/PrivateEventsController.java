@@ -1,4 +1,4 @@
-package ru.practicum.main.controller.eventapi;
+package ru.practicum.main.controller.privateapi;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
