@@ -55,6 +55,25 @@ services:
     networks:
       - ewm-network
 
+  ewm-main-server:
+    build:
+      context: .
+      dockerfile: ewm-main-service/Dockerfile
+    container_name: ewm-main-server
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://ewm-db:5432/ewm
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: pass
+      STATS_SERVER_URL: http://stats-server:9090
+    depends_on:
+      - ewm-db
+      - stats-server
+    networks:
+      - ewm-network
+
 volumes:
   stats_data:
   ewm_data:
