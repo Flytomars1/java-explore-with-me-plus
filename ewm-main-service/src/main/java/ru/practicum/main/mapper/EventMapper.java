@@ -1,5 +1,6 @@
 package ru.practicum.main.mapper;
 
+import ru.practicum.main.dto.rating.RatingDto;
 import ru.practicum.main.model.Event;
 import ru.practicum.main.model.EventState;
 import ru.practicum.main.dto.event.*;
@@ -28,30 +29,70 @@ public class EventMapper {
                 .build();
     }
 
-    public static EventShortDto toShort(Event e, CategoryDto catDto, UserShortDto userDto, long views, long confirmedRequests) {
+    public static EventShortDto toShort(Event e, CategoryDto catDto, UserShortDto userDto,
+                                        long views, long confirmedRequests, RatingDto rating) {
         return new EventShortDto(
-                e.getId(), e.getAnnotation(), catDto, confirmedRequests,
-                e.getEventDate(), userDto, e.getPaid(), e.getTitle(), views
+                e.getId(),
+                e.getAnnotation(),
+                catDto,
+                confirmedRequests,
+                e.getEventDate().toString(),
+                userDto,
+                e.getPaid(),
+                e.getTitle(),
+                views,
+                rating
         );
+    }
+
+    public static EventShortDto toShort(Event e, CategoryDto catDto, UserShortDto userDto,
+                                        long views, long confirmedRequests) {
+        return toShort(e, catDto, userDto, views, confirmedRequests, null);
     }
 
     public static EventShortDto toShort(Event e, long views) {
         return new EventShortDto(
-                e.getId(), e.getAnnotation(), null, 0L,
-                e.getEventDate(), null, e.getPaid(), e.getTitle(), views
+                e.getId(),
+                e.getAnnotation(),
+                null,
+                0L,
+                e.getEventDate().toString(),
+                null,
+                e.getPaid(),
+                e.getTitle(),
+                views,
+                null
         );
     }
 
-    public static EventFullDto toFull(Event e, CategoryDto catDto, UserShortDto userDto, long views, long confirmedRequests) {
+    public static EventFullDto toFull(Event e, CategoryDto catDto, UserShortDto userDto,
+                                      long views, long confirmedRequests, RatingDto rating) {
         LocationDto loc = new LocationDto(e.getLocationLat(), e.getLocationLon());
 
         return new EventFullDto(
-                e.getId(), e.getAnnotation(), e.getDescription(), catDto,
-                confirmedRequests, e.getEventDate(), userDto,
-                loc, e.getPaid(), e.getParticipantLimit(), e.getRequestModeration(),
-                e.getState(), e.getCreatedOn(), e.getPublishedOn(),
-                e.getTitle(), views
+                e.getId(),
+                e.getAnnotation(),
+                e.getDescription(),
+                catDto,
+                confirmedRequests,
+                e.getEventDate().toString(),
+                userDto,
+                loc,
+                e.getPaid(),
+                e.getParticipantLimit(),
+                e.getRequestModeration(),
+                e.getState(),
+                e.getCreatedOn() != null ? e.getCreatedOn().toString() : null,
+                e.getPublishedOn() != null ? e.getPublishedOn().toString() : null,
+                e.getTitle(),
+                views,
+                rating
         );
+    }
+
+    public static EventFullDto toFull(Event e, CategoryDto catDto, UserShortDto userDto,
+                                      long views, long confirmedRequests) {
+        return toFull(e, catDto, userDto, views, confirmedRequests, null);
     }
 
     public static void applyUserUpdate(Event e, UpdateEventUserRequest dto) {

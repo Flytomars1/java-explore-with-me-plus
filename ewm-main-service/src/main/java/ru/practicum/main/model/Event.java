@@ -3,6 +3,7 @@ package ru.practicum.main.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -58,4 +59,7 @@ public class Event {
 
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    private List<EventRating> ratings;
 }
