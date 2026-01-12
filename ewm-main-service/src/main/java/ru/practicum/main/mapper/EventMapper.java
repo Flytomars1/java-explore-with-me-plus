@@ -8,8 +8,11 @@ import ru.practicum.main.dto.category.CategoryDto;
 import ru.practicum.main.dto.user.UserShortDto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class EventMapper {
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static Event toEntity(NewEventDto dto, Long initiatorId) {
         return Event.builder()
@@ -36,7 +39,7 @@ public class EventMapper {
                 e.getAnnotation(),
                 catDto,
                 confirmedRequests,
-                e.getEventDate().toString(),
+                e.getEventDate() != null ? e.getEventDate().format(FORMATTER) : null,
                 userDto,
                 e.getPaid(),
                 e.getTitle(),
@@ -56,7 +59,7 @@ public class EventMapper {
                 e.getAnnotation(),
                 null,
                 0L,
-                e.getEventDate().toString(),
+                e.getEventDate() != null ? e.getEventDate().format(FORMATTER) : null, // ← ИСПРАВЛЕНО!
                 null,
                 e.getPaid(),
                 e.getTitle(),
@@ -75,15 +78,15 @@ public class EventMapper {
                 e.getDescription(),
                 catDto,
                 confirmedRequests,
-                e.getEventDate().toString(),
+                e.getEventDate() != null ? e.getEventDate().format(FORMATTER) : null,
                 userDto,
                 loc,
                 e.getPaid(),
                 e.getParticipantLimit(),
                 e.getRequestModeration(),
                 e.getState(),
-                e.getCreatedOn() != null ? e.getCreatedOn().toString() : null,
-                e.getPublishedOn() != null ? e.getPublishedOn().toString() : null,
+                e.getCreatedOn() != null ? e.getCreatedOn().format(FORMATTER) : null,
+                e.getPublishedOn() != null ? e.getPublishedOn().format(FORMATTER) : null,
                 e.getTitle(),
                 views,
                 rating

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.main.dto.category.CategoryDto;
-import ru.practicum.main.dto.rating.RatingDto; // ← ИМПОРТ
+import ru.practicum.main.dto.rating.RatingDto;
 import ru.practicum.main.dto.user.UserShortDto;
 
 @Data
