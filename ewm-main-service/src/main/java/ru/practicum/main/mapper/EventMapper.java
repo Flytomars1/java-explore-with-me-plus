@@ -72,27 +72,26 @@ public class EventMapper {
                                       long views, long confirmedRequests, RatingDto rating) {
         LocationDto loc = new LocationDto(e.getLocationLat(), e.getLocationLon());
 
-        return new EventFullDto(
-                e.getId(),
-                e.getAnnotation(),
-                e.getDescription(),
-                catDto,
-                confirmedRequests,
-                e.getEventDate() != null ? e.getEventDate().format(FORMATTER) : null,
-                userDto,
-                loc,
-                e.getPaid(),
-                e.getParticipantLimit(),
-                e.getRequestModeration(),
-                e.getState(),
-                e.getCreatedOn() != null ? e.getCreatedOn().format(FORMATTER) : null,
-                e.getPublishedOn() != null ? e.getPublishedOn().format(FORMATTER) : null,
-                e.getTitle(),
-                views,
-                rating
-        );
+        return EventFullDto.builder()
+                .id(e.getId())
+                .annotation(e.getAnnotation())
+                .description(e.getDescription())
+                .category(catDto)
+                .confirmedRequests(confirmedRequests)
+                .eventDate(e.getEventDate() != null ? e.getEventDate().format(FORMATTER) : null)
+                .initiator(userDto)
+                .location(loc)
+                .paid(e.getPaid())
+                .participantLimit(e.getParticipantLimit())
+                .requestModeration(e.getRequestModeration())
+                .state(e.getState())
+                .createdOn(e.getCreatedOn() != null ? e.getCreatedOn().format(FORMATTER) : null)
+                .publishedOn(e.getPublishedOn() != null ? e.getPublishedOn().format(FORMATTER) : null)
+                .title(e.getTitle())
+                .views(views)
+                .rating(rating)
+                .build();
     }
-
     public static EventFullDto toFull(Event e, CategoryDto catDto, UserShortDto userDto,
                                       long views, long confirmedRequests) {
         return toFull(e, catDto, userDto, views, confirmedRequests, null);

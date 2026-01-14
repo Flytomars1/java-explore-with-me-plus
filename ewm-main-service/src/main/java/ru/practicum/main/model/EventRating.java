@@ -8,10 +8,13 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "event_ratings",
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "event_id"}))
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"user", "event"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EventRating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
