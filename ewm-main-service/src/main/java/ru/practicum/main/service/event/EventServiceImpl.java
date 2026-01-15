@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.dto.event.*;
 import ru.practicum.main.dto.category.CategoryDto;
+import ru.practicum.main.dto.rating.RatingDto;
 import ru.practicum.main.dto.user.UserShortDto;
 import ru.practicum.main.exception.ConflictException;
 import ru.practicum.main.exception.NotFoundException;
@@ -18,6 +19,7 @@ import ru.practicum.main.repository.CategoryRepository;
 import ru.practicum.main.repository.EventRepository;
 import ru.practicum.main.repository.RequestRepository;
 import ru.practicum.main.repository.UserRepository;
+import ru.practicum.main.service.rating.RatingService;
 import ru.practicum.stats.client.StatsClient;
 import ru.practicum.stats.dto.HitDto;
 import ru.practicum.stats.dto.ViewStatsDto;
@@ -37,6 +39,7 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
     private final StatsClient statsClient;
+    private final RatingService ratingService;
 
     @Override
     @Transactional
@@ -149,7 +152,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventShortDto> searchPublic(String text, List<Long> categories, Boolean paid,
                                             LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                            Boolean onlyAvailable, String sort, int from, int size, String requestUri, String ip) {
+                                            Boolean onlyAvailable, String sort, int from, int size,
+                                            String requestUri, String ip) {
 
         safeAddHit(requestUri, ip);
 
@@ -165,9 +169,21 @@ public class EventServiceImpl implements EventService {
         Pageable pageable = PageRequest.of(from / size, size, Sort.by("eventDate"));
         Page<Event> page = eventRepository.findAll(spec, pageable);
 
+        Comparator<EventShortDto> comparator;
+        if ("VIEWS".equalsIgnoreCase(sort)) {
+            comparator = Comparator.comparing(EventShortDto::getViews).reversed();
+        } else if ("RATING_DESC".equalsIgnoreCase(sort)) {
+            comparator = Comparator.comparing(dto -> dto.getRating() != null ? dto.getRating().getScore() : 0,
+                    Comparator.reverseOrder());
+        } else if ("RATING_ASC".equalsIgnoreCase(sort)) {
+            comparator = Comparator.comparing(dto -> dto.getRating() != null ? dto.getRating().getScore() : 0);
+        } else {
+            comparator = Comparator.comparing(EventShortDto::getEventDate);
+        }
+
         return page.getContent().stream()
                 .map(this::enrichShortDto)
-                .sorted("VIEWS".equalsIgnoreCase(sort) ? Comparator.comparing(EventShortDto::getViews).reversed() : Comparator.comparing(EventShortDto::getEventDate))
+                .sorted(comparator)
                 .collect(Collectors.toList());
     }
 
@@ -244,7 +260,10 @@ public class EventServiceImpl implements EventService {
         CategoryDto catDto = cat != null ? new CategoryDto(cat.getId(), cat.getName()) : null;
         User user = userRepository.findById(e.getInitiatorId()).orElse(null);
         UserShortDto userDto = user != null ? new UserShortDto(user.getId(), user.getName()) : null;
-        return EventMapper.toFull(e, catDto, userDto, views, confirmed);
+
+        RatingDto rating = ratingService.getEventRating(e.getId());
+
+        return EventMapper.toFull(e, catDto, userDto, views, confirmed, rating);
     }
 
     private EventShortDto enrichShortDto(Event e) {
@@ -254,7 +273,10 @@ public class EventServiceImpl implements EventService {
         CategoryDto catDto = cat != null ? new CategoryDto(cat.getId(), cat.getName()) : null;
         User user = userRepository.findById(e.getInitiatorId()).orElse(null);
         UserShortDto userDto = user != null ? new UserShortDto(user.getId(), user.getName()) : null;
-        return EventMapper.toShort(e, catDto, userDto, views, confirmed);
+
+        RatingDto rating = ratingService.getEventRating(e.getId());
+
+        return EventMapper.toShort(e, catDto, userDto, views, confirmed, rating);
     }
 
     private long fetchViews(Long eventId) {
